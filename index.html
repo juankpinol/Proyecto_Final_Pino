@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Información Personal</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+</head>
+<body>
+    <h1>Formulario de Información Personal</h1>
+
+    <form id="personalInfoForm">
+        <h2>Ingrese la información personal:</h2>
+
+        <label for="nombre">Nombres:</label>
+        <input type="text" id="nombre" required><br><br>
+
+        <label for="apellidos">Apellidos:</label>
+        <input type="text" id="apellidos" required><br><br>
+
+        <label for="dni">DNI:</label>
+        <input type="text" id="dni" required><br><br>
+
+        <label for="telefono">Número telefónico:</label>
+        <input type="text" id="telefono" required><br><br>
+
+        <button type="button" id="agregarButton">Agregar Información</button>
+    </form>
+
+    <h2>Información ingresada:</h2>
+    <ul id="informacionLista"></ul>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Sweet Alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- Luxon -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.3/build/global/luxon.min.js"></script>
+  
+    <script src="main.js"></script>
+
+    <script>
+        // main.js
+
+        // Declarar la variable informacionPersonal en el alcance global
+        let informacionPersonal = [];
+
+        // Función para cargar la información almacenada en localStorage al arreglo
+        function cargarInformacion() {
+            const informacionGuardada = localStorage.getItem('informacionPersonal');
+            if (informacionGuardada) {
+                informacionPersonal = JSON.parse(informacionGuardada);
+            }
+        }
+
+        // Función para guardar la información en localStorage
+        function guardarInformacion() {
+            localStorage.setItem('informacionPersonal', JSON.stringify(informacionPersonal));
+        }
+
+        // Función para agregar información al arreglo y actualizar el DOM
+        function agregarInformacion() {
+            const nombre = document.getElementById("nombre").value;
+            const apellidos = document.getElementById("apellidos").value;
+            const dni = document.getElementById("dni").value;
+            const telefono = document.getElementById("telefono").value;
+
+            // Validar que los campos no estén vacíos
+            if (nombre && apellidos && dni && telefono) {
+                // Agregar la información al arreglo
+                informacionPersonal.push({ nombre, apellidos, dni, telefono });
+
+                // Guardar la información en localStorage
+                guardarInformacion();
+
+                // Limpiar los campos del formulario
+                document.getElementById("nombre").value = "";
+                document.getElementById("apellidos").value = "";
+                document.getElementById("dni").value = "";
+                document.getElementById("telefono").value = "";
+
+                // Actualizar la lista de información ingresada en el DOM
+                actualizarLista();
+
+                // Mostrar SweetAlert
+                Swal.fire({
+                    title: "Información Agregada",
+                    text: "La información ha sido agregada correctamente.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                });
+            } else {
+                // Mostrar SweetAlert para informar sobre campos vacíos
+                Swal.fire({
+                    title: "Error",
+                    text: "Por favor, complete todos los campos.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            }
+        }
+
+        // Función para actualizar la lista en el DOM
+        function actualizarLista() {
+            const lista = document.getElementById("informacionLista");
+            lista.innerHTML = ""; // Limpiar la lista
+
+            informacionPersonal.forEach((info, index) => {
+                const item = document.createElement("li");
+                item.textContent = `Persona ${index + 1}: ${info.nombre} ${info.apellidos}, DNI: ${info.dni}, Teléfono: ${info.telefono}`;
+                lista.appendChild(item);
+            });
+        }
+
+        // Cargar información al iniciar la página
+        cargarInformacion();
+
+        // Agregar un event listener al botón para capturar el evento de clic
+        const agregarButton = document.getElementById("agregarButton");
+        agregarButton.addEventListener("click", agregarInformacion);
+    </script>
+</body>
+</html>
